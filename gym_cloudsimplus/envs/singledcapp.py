@@ -11,11 +11,7 @@ ACTION_NOTHING = 0
 ACTION_ADD_VM = 1
 ACTION_REMOVE_VM = 2
 
-address = os.getenv('CLOUDSIM_GATEWAY_HOST', 'cloudsimplus-gateway')
-port = os.getenv('CLOUDSIM_GATEWAY_PORT', '25333')
-parameters = GatewayParameters(address=address,
-                               port=int(port),
-                               auto_convert=True)
+parameters = GatewayParameters(auto_convert=True)  # TODO for now uses default params for address and port
 gateway = JavaGateway(gateway_parameters=parameters)
 simulation_environment = gateway.entry_point
 
@@ -46,16 +42,8 @@ class SingleDCAppEnv(gym.Env):
         # "p90MemoryUtilizationHistory",
         # "waitingJobsRatioGlobalHistory",
         # "waitingJobsRatioRecentHistory"
-        self.observation_space = spaces.Box(
-            low=np.array([0, 0, 0, 0, 0, 0, 0]),
-            high=np.array([1.0,
-                           1.0,
-                           1.0,
-                           1.0,
-                           1.0,
-                           1.0,
-                           1.0])
-        )
+
+        self.observation_space = spaces.Box(low=np.array([0] * 7), high=np.array([1.0] * 7), dtype=np.double)
         params = {
             'INITIAL_VM_COUNT': kwargs.get('initial_vm_count'),
             'SOURCE_OF_JOBS': 'PARAMS',
@@ -106,7 +94,7 @@ class SingleDCAppEnv(gym.Env):
             return super().render(mode)
 
     def close(self):
-        # close the resources
+        # close the data
         simulation_environment.close(self.simulation_id)
 
     def seed(self):

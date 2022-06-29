@@ -1,24 +1,28 @@
-from py4j.java_gateway import JavaGateway
+import gym
+import gym_cloudsimplus
 import json
 
-gateway = JavaGateway()
-simulation_environment = gateway.entry_point
+from utils.swf import read_swf
 
-simulation_environment.reset()
+
+env = gym.make('SingleDCAppEnv-v0',
+               initial_vm_count="0",
+               jobs_as_json=json.dumps(read_swf()),  # added since otherwise the sim is done after the first step, and this test script would fail.
+               split_large_jobs="true")
+env.reset()
 print("Starting a simulation")
-simulation_environment.step(0)
+env.step(0)
+
 for i in range(50):
-    simulation_environment.step(1)
-    result = simulation_environment.render()
+    env.step(1)
+    result = env.render()
     result = json.loads(result)
     print("Added a VM: " + str(result[0][-5:]))
 
 done = False
-
 while not done:
-    result = simulation_environment.step(0)
-    done = result.isDone()
-    state = simulation_environment.render()
+    obs, reward, done, info = env.step(0)
+    state = env.render()
     state = json.loads(state)
     print("Did nothing: " + str(state[0][-5:]))
     print("Result: " + str(done))

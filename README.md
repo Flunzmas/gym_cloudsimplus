@@ -10,7 +10,7 @@ The environment has two parameters (set an environment variables):
 
 In the `manual_tests`directory you can find three test scripts:
 
-* `test_connect.py` - connects to the gateway directory and tries to tries to 
+* `test_connect.py` - connects to the gateway directory and tries to 
   add/remove virtual machines
 * `test_finish.py` - connects to the gateway directly and runs the simulation 
   scenario until its end

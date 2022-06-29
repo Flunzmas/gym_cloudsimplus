@@ -1,59 +1,26 @@
-from py4j.java_gateway import JavaGateway
+import gym
+import gym_cloudsimplus
 import json
 
-gateway = JavaGateway()
-simulation_environment = gateway.entry_point
+from utils.swf import read_swf
 
-# result = simulation_environment.step(0)
 
-# print(result)
-# print(result.isDone())
-# print(result.getObs())
-# print(result.getReward())
+env = gym.make('SingleDCAppEnv-v0',
+               initial_vm_count="0",
+               jobs_as_json=json.dumps(read_swf()),  # added since otherwise the sim is done after the first step, and this test script would fail.
+               split_large_jobs="true")
+env.reset()
 
-result = simulation_environment.render()
+result = env.render()
 result = json.loads(result)
-
 print("Start: " + str(result[0][-5:]))
 
-#print("Size: " + str(len(result)))
-#for i in range(len(result)):
-#    print("Render: " + str(i) + " " + str(len(result[i])))
-#
-#    for j in range(len(result[i])):
-#        print("Render: " + str(i) + " " + str(j) + " " + str(result[i][j]))
+test_actions = [0, 1, 0, 2, 0, 0, 0]
+for i, test_action in enumerate(test_actions):
+    env.step(test_action)
+    result = env.render()
+    result = json.loads(result)
+    print(f"Step {i+1} (Action {test_action}): " + str(result[0][-5:]))
 
-
-simulation_environment.step(0)
-result = simulation_environment.render()
-result = json.loads(result)
-
-print("Did nothing: " + str(result[0][-5:]))
-
-simulation_environment.step(1)
-result = simulation_environment.render()
-result = json.loads(result)
-print("Added VM: " + str(result[0][-5:]))
-
-simulation_environment.step(0)
-result = simulation_environment.render()
-result = json.loads(result)
-print("Did nothing: " + str(result[0][-5:]))
-
-simulation_environment.step(2)
-result = simulation_environment.render()
-result = json.loads(result)
-print("Destroyed VM: " + str(result[0][-5:]))
-
-simulation_environment.step(0)
-result = simulation_environment.render()
-result = json.loads(result)
-print("Did nothing: " + str(result[0][-5:]))
-simulation_environment.step(0)
-result = simulation_environment.render()
-result = json.loads(result)
-print("Did nothing: " + str(result[0][-5:]))
-simulation_environment.step(0)
-result = simulation_environment.render()
-result = json.loads(result)
-print("Did nothing: " + str(result[0][-5:]))
+print("finishing test and closing env...")
+env.close()

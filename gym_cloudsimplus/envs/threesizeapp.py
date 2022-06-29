@@ -104,7 +104,7 @@ class ThreeSizeAppEnv(gym.Env):
             return super().render(mode)
 
     def close(self):
-        # close the resources
+        # close the data
         simulation_environment.close(self.simulation_id)
 
     def seed(self):
